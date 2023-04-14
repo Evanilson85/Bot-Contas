@@ -1,0 +1,47 @@
+{
+    "env": {
+        "commonjs": true,
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "airbnb-base",
+        "prettier"
+    ],
+    "overrides": [],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "prettier"
+    ],
+    "rules": {
+        "semi": [
+            "error",
+            "always"
+        ],
+        "no-console": "error",
+        "no-unused-vars": [
+            "warn",
+            {
+                "args": "none"
+            }
+        ],
+        "no-undef": "error",
+        "indent": [
+            "error",
+            2
+        ],
+        "prettier/prettier": "error",
+        "max-len": [
+            "warn",
+            {
+                "code": 120
+            }
+        ]
+    }
+}
