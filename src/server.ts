@@ -1,14 +1,19 @@
 import express from 'express';
 import { router } from './router/index';
 import { Position } from './utils/positionClick';
+import { DataControllerReading } from './controller/dataReadingController';
+const readlineSync = require('readline-sync');
 
 const app = express();
-const position = new Position();
 
-// position.clickMouse();
-position.mouseClickWrite();
+let userName = readlineSync.question('May I have your name? ');
+console.log('Hi ' + userName + '!');
 
-// position.execute();
+const s26 = new DataControllerReading();
+s26.executeCreateFolderEdit();
+
+//!const position = new Position();
+//! click  position.clickMouse();
 
 app.use(express.json());
 

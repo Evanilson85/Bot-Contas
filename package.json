@@ -17,6 +17,7 @@
     "global-mouse-events": "^1.1.0",
     "node-gyp": "8.4.1",
     "prettier": "^2.8.7",
+    "readline-sync": "^1.4.10",
     "robotjs": "^0.6.0"
   },
   "devDependencies": {

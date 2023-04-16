@@ -1,107 +1,100 @@
-import key from '../../utils/keys';
-import robot from 'robotjs';
+import { InitFileS26 } from '../files/s26';
 const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const readlineSync = require('readline-sync');
 
-const { keyTap, setKeyboardDelay, typeString, mouseClick, moveMouse } = robot;
 const date = new Date();
 const nameMonth = date.toLocaleDateString('pt-br', { month: 'long' });
 const nameYear = date.toLocaleDateString('pt-br', { year: 'numeric' });
+const pathFolder = 'C:/Users/evani/Desktop/ContasTeste/';
+const pathFolderCopy = 'C:/Users/evani/Desktop/ContasTeste/Arquivos';
 
-const pathFolder = 'C:/Users/evani/Desktop/ContasTeste';
+export const openFolder = (pathFolderAndFile: string) => {
+  //! abrir minha pasta e executar a função executeMain
 
-export const createFolder = (nameFolder: string) => {
-  setKeyboardDelay(1000);
-  keyTap('n', [key.ctrl, key.shift]);
-
-  typeString(nameFolder);
-
-  keyTap('enter');
-
-  keyTap('enter');
-};
-
-export const openFolder = () => {
-  exec(`start  ${pathFolder}`, async (err: any, stdout: any, stderr: any) => {
+  exec(`start  ${pathFolderAndFile}`, async (err: any, stdout: any, stderr: any) => {
     if (err) {
       console.error(err);
       return;
     }
-    await passos();
+
+    if (readlineSync.keyInYN('Criar Pasta do mes atual?')) {
+      console.log('sim...');
+      await executeMain(`${nameYear}-${nameMonth}`);
+    } else {
+      let nameMonth = readlineSync.question('Digite o nome do mes? ');
+      console.log(`Criando arquivos com o nome ${nameMonth}`);
+      await executeMain(`${nameYear}-${nameMonth}`);
+    }
   });
 };
 
-export const passos = async () => {
-  // keyTap('s', key.wind);
+const executeMain = async (nameYearDefault: string) => {
+  //! executar as função
 
-  // typeString(nameItem);
+  createFolderNode(nameYearDefault);
 
-  // setKeyboardDelay(4000);
-
-  // keyTap('enter');
-
-  keyTap('up', key.wind);
-
-  keyTap('a');
-
-  keyTap('enter');
-
-  copy();
-
-  createFolder(`${nameYear}-${nameMonth}`);
-
-  keyTap('enter');
-
-  // robot.setMouseDelay(2);
-
-  // moveMouse(984, 377);
-  moveMouse(519, 223);
-
-  keyTap('v', [key.ctrl]);
-
-  const allFiles = (await paths()) as [];
+  const allFiles = (await paths(`${pathFolder}/Arquivos`)) as [];
 
   for (let file of allFiles) {
-    await renameFile(file);
+    console.log(file, '-----------------');
+    await copyFilesPath(file, nameYearDefault);
   }
 
-  await open();
+  await openFiles(`${pathFolder}${nameYearDefault}/S-26_T.pdf`);
+
+  InitFileS26(nameYearDefault.split('-')[1]);
+
+  //? esse codigo vai percorrer a minha pasta criada e abrir todos os arquivos
+  //! const allFile = (await paths(`${pathFolder}/${nameYear}-${nameMonth}`)) as [];
+  //! for (let item of allFile) {
+  //!   await openFolder(`${pathFolder}${nameYear}-${nameMonth}/${item}`);
+  //! }
 };
 
-const open = async () => {
+const copyFilesPath = (file?: string, nameFolder?: string) => {
+  //! copiar e colar arquivos na nova pasta
   return new Promise((resolve, reject) => {
-    keyTap('a', [key.ctrl]);
-
-    mouseClick('right');
-
-    keyTap('down');
-
-    keyTap('enter');
-
-    // mouseClick();
+    try {
+      fs.copyFile(`${pathFolderCopy}/${file}`, `${pathFolder}${nameFolder}/${file}`, (err: any) => {
+        if (err) throw err;
+        console.log('Arquivo copiado com sucesso!');
+        resolve(true);
+      });
+    } catch (error) {
+      reject(error);
+    }
   });
 };
 
-const copy = () => {
-  keyTap('a', [key.ctrl]);
-
-  keyTap('c', [key.ctrl]);
-
-  keyTap('left', [key.alt]);
+const createFolderNode = (name?: string) => {
+  //! criar pasta nova
+  try {
+    fs.mkdirSync(name ? `${pathFolder}${name}` : `${pathFolder}${nameYear}-${nameMonth}`);
+    console.log('Pasta criada com sucesso!');
+  } catch (err) {
+    console.error('Erro ao criar pasta: ', err);
+  }
 };
 
-const paths = () => {
+const openFiles = (pathFolderAndFile: string) => {
+  //! Abrir o meu arquivo
+  exec(`start  ${pathFolderAndFile}`, async (err: any, stdout: any, stderr: any) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+  });
+};
+
+const paths = (pathItems: string) => {
+  //! retorna todos os arquivos da pasta em []
   return new Promise((resolve, reject) => {
     try {
-      const caminhoCompleto = path.resolve(pathFolder + `/${nameYear}-${nameMonth}`);
+      const caminhoCompleto = path.resolve(pathItems);
       fs.readdir(caminhoCompleto, (err: any, arquivos: any) => {
         resolve(arquivos);
-        // if (err) {
-        //   console.error(err);
-        // } else {
-        //   renameFile(arquivos);
-        // }
       });
     } catch (error) {
       reject(error);
@@ -110,10 +103,10 @@ const paths = () => {
 };
 
 const renameFile = (file: string) => {
+  //! renomear nomes de arquivos
   return new Promise((resolve, reject) => {
     try {
       const name = path.resolve(pathFolder + `/${nameYear}-${nameMonth}/${file}`);
-      // const newName = path.resolve(pathFolder + `/${nameYear}-${nameMonth}/${index}${nameMonth}-${file}`);
       const newName = path.resolve(pathFolder + `/${nameYear}-${nameMonth}/${nameMonth}-${file}`);
       console.log(name);
       fs.rename(name, newName, (err: any) => {
@@ -124,22 +117,8 @@ const renameFile = (file: string) => {
           console.log(`Arquivo ${name} renomeado com sucesso para ${newName}`);
         }
       });
-      // files.forEach((element: string, index) => {
-      // });
     } catch (error) {
       reject(error);
-    }
-  });
-};
-
-const openFile = (caminhoArquivo: any) => {
-  const modo = 'r';
-
-  fs.open(caminhoArquivo, modo, (err: any, fd: any) => {
-    if (err) {
-      console.error(err);
-    } else {
-      console.log(`Arquivo aberto com sucesso! file descriptor: ${fd}`);
     }
   });
 };
