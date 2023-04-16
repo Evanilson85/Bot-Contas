@@ -1,16 +1,26 @@
 import { data } from '../utils/dataReading';
-import { ScrollMouse } from './mouseEvent/scrollMouse';
+import { ScrollMouses } from './mouseEvent/scrollMouse';
+import { createFolder, passos, openFolder } from './createFolder/index';
 const robot = require('robotjs');
 
 export class DataControllerReading {
   executeHeader() {}
 
+  executeCreateFolder() {
+    // passos('ContasTeste');
+    // passos();;
+    openFolder();
+    // createFolder('teste');
+  }
+
   async executeReading() {
     // data.forEach((item, index) => {
     //   console.log(item);
     // });
-    const tes = new ScrollMouse();
+    const tes = new ScrollMouses();
     tes.executeBottomPage();
+
+    this.executeCreateFolder();
 
     return;
     for (let obj of data) {

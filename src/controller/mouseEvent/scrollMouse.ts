@@ -1,8 +1,13 @@
 const robot = require('robotjs');
 
-export class ScrollMouse {
+export class ScrollMouses {
   executeBottomPage() {
-    robot.scrollMouse(-14, 'down');
+    const x = 352;
+    const y = 240;
+    robot.setMouseDelay(2);
+
+    robot.moveMouse(x, y);
+    robot.scrollMouse(0, 100);
     setTimeout(function () {}, 2000);
   }
 }
